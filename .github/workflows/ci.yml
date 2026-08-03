@@ -1,0 +1,40 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node: [18, 20, 22]
+    steps:
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+      - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444 # v5
+        with:
+          node-version: ${{ matrix.node }}
+          cache: npm
+      - run: npm ci
+      - run: npm ci --omit=dev
+        working-directory: mcpb/server
+      - run: npm test
+      - run: npm run validate:mcpb
+      - run: npm audit
+      - run: npm audit --omit=dev
+        working-directory: mcpb/server
+      - run: npm run build:mcpb
+      - run: npx mcpb info readability.mcpb
+      - run: sha256sum -c readability.mcpb.sha256
+      - name: Reject metadata and repository files in bundle
+        run: |
+          if unzip -Z1 readability.mcpb | grep -E '(^|/)(\._|\.DS_Store|\.git/)'; then
+            echo "Forbidden file found in bundle"
+            exit 1
+          fi
+      - name: Verify generated copies are committed
+        run: git diff --exit-code

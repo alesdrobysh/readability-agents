@@ -1,0 +1,10 @@
+node_modules/
+*.dxt
+*.mcpb
+*.mcpb.sha256
+.DS_Store
+._*
+**/._*
+.claude/
+!**/.claude-plugin/
+!**/.claude-plugin/**

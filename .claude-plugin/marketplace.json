@@ -1,0 +1,14 @@
+{
+  "name": "readability-marketplace",
+  "owner": {
+    "name": "Ales Drobysh"
+  },
+  "description": "Readability tools for Claude Code.",
+  "plugins": [
+    {
+      "name": "readability",
+      "source": "./plugin",
+      "description": "Score and improve English prose using Flesch Reading Ease and MTLD."
+    }
+  ]
+}

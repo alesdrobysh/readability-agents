@@ -1,0 +1,12 @@
+{
+  "name": "readability",
+  "version": "0.1.0",
+  "description": "Score English prose with Flesch Reading Ease and MTLD; rewrite drafts until they clear a threshold.",
+  "author": {
+    "name": "Ales Drobysh"
+  },
+  "license": "MIT",
+  "repository": "https://github.com/alesdrobysh/readability-claude",
+  "homepage": "https://github.com/alesdrobysh/readability-claude#readme",
+  "keywords": ["readability", "flesch-reading-ease", "writing", "prose"]
+}

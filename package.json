@@ -1,0 +1,42 @@
+{
+  "name": "readability-claude",
+  "version": "0.1.0",
+  "description": "Local English readability checks for Claude Code and Claude Desktop.",
+  "private": true,
+  "type": "module",
+  "bin": {
+    "readability-check": "./src/check.js"
+  },
+  "scripts": {
+    "check": "node src/check.js",
+    "test": "node test/smoke.js",
+    "build": "bash scripts/build-mcpb.sh",
+    "build:mcpb": "bash scripts/build-mcpb.sh",
+    "validate:mcpb": "mcpb validate mcpb/manifest.json"
+  },
+  "author": "Ales Drobysh",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/alesdrobysh/readability-claude.git"
+  },
+  "homepage": "https://github.com/alesdrobysh/readability-claude#readme",
+  "bugs": "https://github.com/alesdrobysh/readability-claude/issues",
+  "keywords": [
+    "claude",
+    "mcp",
+    "mcpb",
+    "readability",
+    "flesch",
+    "writing"
+  ],
+  "license": "MIT",
+  "engines": {
+    "node": ">=18"
+  },
+  "devDependencies": {
+    "@anthropic-ai/mcpb": "^2.1.2"
+  },
+  "overrides": {
+    "tmp": "0.2.7"
+  }
+}

@@ -1,0 +1,44 @@
+name: Release
+
+on:
+  push:
+    tags: ["v*"]
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+      - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444 # v5
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm ci --omit=dev
+        working-directory: mcpb/server
+      - run: npm test
+      - run: npm audit
+      - run: npm audit --omit=dev
+        working-directory: mcpb/server
+      - name: Verify tag matches package version
+        run: test "${GITHUB_REF_NAME#v}" = "$(node -p "require('./package.json').version")"
+      - run: npm run build:mcpb
+      - run: npx mcpb info readability.mcpb
+      - run: sha256sum -c readability.mcpb.sha256
+      - name: Reject metadata and repository files in bundle
+        run: |
+          if unzip -Z1 readability.mcpb | grep -E '(^|/)(\._|\.DS_Store|\.git/)'; then
+            echo "Forbidden file found in bundle"
+            exit 1
+          fi
+      - name: Publish GitHub release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: >-
+          gh release create "$GITHUB_REF_NAME"
+          readability.mcpb readability.mcpb.sha256
+          --title "$GITHUB_REF_NAME"
+          --generate-notes

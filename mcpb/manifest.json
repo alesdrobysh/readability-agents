@@ -1,0 +1,42 @@
+{
+  "manifest_version": "0.3",
+  "name": "readability",
+  "display_name": "Readability",
+  "version": "0.1.0",
+  "description": "Score English prose with Flesch Reading Ease and MTLD, and get rewrite guidance.",
+  "long_description": "Adds an analyze_readability tool to Claude Desktop. Pass English prose and get Flesch Reading Ease (0-100), MTLD, TTR, sentence and word stats, and a complexity label. The analyzer runs locally and makes no network requests.",
+  "author": {
+    "name": "Ales Drobysh",
+    "url": "https://github.com/alesdrobysh"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/alesdrobysh/readability-claude.git"
+  },
+  "homepage": "https://github.com/alesdrobysh/readability-claude",
+  "documentation": "https://github.com/alesdrobysh/readability-claude#readme",
+  "support": "https://github.com/alesdrobysh/readability-claude/issues",
+  "icon": "icon.png",
+  "license": "MIT",
+  "keywords": ["readability", "writing", "prose", "flesch-reading-ease"],
+  "server": {
+    "type": "node",
+    "entry_point": "server/index.js",
+    "mcp_config": {
+      "command": "node",
+      "args": ["${__dirname}/server/index.js"]
+    }
+  },
+  "tools": [
+    {
+      "name": "analyze_readability",
+      "description": "Analyze English prose and return Flesch Reading Ease, MTLD, TTR, and surface stats."
+    }
+  ],
+  "compatibility": {
+    "platforms": ["darwin", "win32", "linux"],
+    "runtimes": {
+      "node": ">=20"
+    }
+  }
+}
