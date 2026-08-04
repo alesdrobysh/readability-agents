@@ -4,10 +4,9 @@
 [![Release](https://img.shields.io/github/v/release/alesdrobysh/readability-claude)](https://github.com/alesdrobysh/readability-claude/releases)
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 
-Keep Claude's prose clear without sending the draft to another service.
-Readability adds a local, deterministic readability check to Claude Code and
-Claude Desktop. Claude can score a draft, rewrite it, and check the result
-again.
+Keep Claude's prose clear without sending drafts to another app. Readability
+checks text locally in Claude Code and Claude Desktop. Claude scores a draft,
+rewrites it, and checks it again.
 
 - Flesch Reading Ease: 0-100, higher is easier
 - MTLD and type-token ratio for lexical diversity
@@ -17,6 +16,8 @@ again.
 
 > “Rewrite this release note in plain English. Keep every fact and aim for a
 > Reading Ease score of at least 60.”
+
+![Demo: Claude Code reading a draft, checking its readability, rewriting it, and confirming the score cleared 60](demo/claude-code/claude-code-demo.gif)
 
 ## Install
 
@@ -55,6 +56,8 @@ printf '%s\n' 'Your draft goes here.' | node src/check.js --threshold 60
 
 The threshold command exits 1 when the draft misses the target. Invalid input
 or options exit 2.
+
+![Demo: the same paragraph scoring 0 before a rewrite and 99 after, from the CLI](demo/cli/readability.gif)
 
 ## Example output
 

@@ -1,0 +1,1 @@
+This doc explains what to check before you change the system. Read it first. It lists the setup steps and the risks.
