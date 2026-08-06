@@ -4,20 +4,39 @@
 [![Release](https://img.shields.io/github/v/release/alesdrobysh/readability-claude)](https://github.com/alesdrobysh/readability-claude/releases)
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 
-Keep Claude's prose clear without sending drafts to another app. Readability
-checks text locally in Claude Code and Claude Desktop. Claude scores a draft,
-rewrites it, and checks it again.
+Stop Claude from turning a short release note or README into polished but dense
+prose. Readability gives Claude a local **measure → rewrite → verify** loop: it
+scores a draft, improves it without dropping facts, and checks the result again.
+
+No copy-pasting into another editor. No account, API key, telemetry, or network
+request.
+
+> “Rewrite this release note in plain English. Keep every fact and aim for a
+> Reading Ease score of at least 60.”
+
+![Demo: Claude Code reading a draft, checking its readability, rewriting it, and confirming the score cleared 60](demo/claude-code/claude-code-demo.gif)
+
+## Why use a skill instead of just prompting Claude?
+
+Claude can simplify prose on request, but “make this clearer” has no objective
+finish line. Readability adds a deterministic local check and keeps Claude in a
+loop until the draft clears your target—or further simplification would damage
+the content.
+
+Use it for:
+
+- READMEs and product documentation
+- Release notes and changelogs
+- PR descriptions and commit bodies
+- Technical explanations for a broader audience
+
+It reports:
 
 - Flesch Reading Ease: 0-100, higher is easier
 - MTLD and type-token ratio for lexical diversity
 - Sentence, paragraph, and word statistics
 - Local processing with no telemetry or network requests
 - Pure-JavaScript analyzer with no runtime dependencies
-
-> “Rewrite this release note in plain English. Keep every fact and aim for a
-> Reading Ease score of at least 60.”
-
-![Demo: Claude Code reading a draft, checking its readability, rewriting it, and confirming the score cleared 60](demo/claude-code/claude-code-demo.gif)
 
 ## Install
 
@@ -59,6 +78,15 @@ or options exit 2.
 
 ![Demo: the same paragraph scoring 0 before a rewrite and 99 after, from the CLI](demo/cli/readability.gif)
 
+### Documentation quality gate
+
+Use a threshold in scripts or CI. The command exits 1 when prose misses the
+target, so it can block an unreadable draft before it ships:
+
+```bash
+node src/check.js --threshold 60 < README.md
+```
+
 ## Example output
 
 ```json
@@ -98,6 +126,19 @@ style. Use the score as a guardrail against bloat, not a target to game.
 
 Do not use it on source code, logs, command output, non-English prose, or tiny
 samples.
+
+## How it compares
+
+| Approach | Rewrites in Claude | Deterministic score | Local analysis | Threshold exit code |
+|---|---:|---:|---:|---:|
+| Ask Claude to “make it clearer” | Yes | No | — | No |
+| Browser-based writing editor | Outside Claude | Usually | Varies | No |
+| Traditional prose linter | No | Rule-based | Usually | Usually |
+| **Readability for Claude** | **Yes** | **Yes** | **Yes** | **Yes** |
+
+Readability is intentionally narrower than a grammar checker or configurable
+style linter. It is a small guardrail for one job: making substantial English
+prose easier to read without losing its meaning.
 
 ## Privacy and security
 

@@ -1,12 +1,12 @@
 {
   "name": "readability",
   "version": "0.1.0",
-  "description": "Score English prose with Flesch Reading Ease and MTLD; rewrite drafts until they clear a threshold.",
+  "description": "Make Claude's prose easier to read, then verify the rewrite locally with a measurable score.",
   "author": {
     "name": "Ales Drobysh"
   },
   "license": "MIT",
   "repository": "https://github.com/alesdrobysh/readability-claude",
   "homepage": "https://github.com/alesdrobysh/readability-claude#readme",
-  "keywords": ["readability", "flesch-reading-ease", "writing", "prose"]
+  "keywords": ["readability", "flesch-reading-ease", "writing", "documentation", "plain-language", "local-first"]
 }

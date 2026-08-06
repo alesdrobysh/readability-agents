@@ -8,7 +8,9 @@
     {
       "name": "readability",
       "source": "./plugin",
-      "description": "Score and improve English prose using Flesch Reading Ease and MTLD."
+      "description": "Make Claude's prose easier to read, then verify the rewrite locally with a measurable score.",
+      "category": "productivity",
+      "tags": ["writing", "readability", "documentation", "plain-language", "local-first"]
     }
   ]
 }
