@@ -4,12 +4,11 @@
 [![Release](https://img.shields.io/github/v/release/alesdrobysh/readability-agents)](https://github.com/alesdrobysh/readability-agents/releases)
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 
-Readability gives Codex, OpenCode, Pi, OMP, Hermes, and Claude a local
-**measure → rewrite → verify** loop for English prose. It scores a draft,
-guides a rewrite without dropping facts, and checks the result again.
+Readability helps Codex, OpenCode, Pi, OMP, Hermes, and Claude make English
+prose easier to read. It runs a local **measure → rewrite → verify** loop. The
+agent keeps the facts while it works toward your target score.
 
-No copy-pasting into another editor. No account, API key, telemetry, or network
-request.
+It works locally. You need no account, API key, telemetry, or network request.
 
 > “Rewrite this release note in plain English. Keep every fact and aim for a
 > Reading Ease score of at least 60.”
@@ -22,15 +21,14 @@ $readability Check `your-draft.md`. Keep every fact. Target Reading Ease 60.
 
 ![Real OpenCode session: the readability skill rewrites a draft and verifies the final score](demo/opencode/readability.gif)
 
-This recording comes from a real OpenCode session. It shows the skill call,
-local analyzer output, rewrite, and final Reading Ease score.
+This recording comes from a real OpenCode session. It shows the skill call, the
+local analyzer, the rewrite, and the final Reading Ease score.
 
 ## Why use a skill instead of just prompting an agent?
 
-An agent can simplify prose on request, but “make this clearer” has no objective
-finish line. Readability adds a deterministic local check and keeps the agent in a
-loop until the draft clears your target—or further simplification would damage
-the content.
+An agent can rewrite prose when you ask. But “make this clearer” has no clear
+stopping point. Readability adds a local score. The agent keeps rewriting until
+the draft meets your target or another rewrite would hurt the meaning.
 
 Use it for:
 
@@ -39,20 +37,20 @@ Use it for:
 - PR descriptions and commit bodies
 - Technical explanations for a broader audience
 
-It reports:
+It reports these values:
 
 - Flesch Reading Ease: 0-100, higher is easier
-- MTLD and type-token ratio for lexical diversity
-- Sentence, paragraph, and word statistics
+- MTLD and type-token ratio for word variety
+- Sentence, paragraph, and word counts
 - Local processing with no telemetry or network requests
-- Pure-JavaScript analyzer with no runtime dependencies
+- A pure JavaScript analyzer with no runtime dependencies
 
 ## Install
 
-The reusable skill is [`skills/readability`](skills/readability/SKILL.md). It
-contains its own Node.js CLI and needs Node.js 18 or newer on `PATH`. Install
-the entire `readability` folder so `SKILL.md`, `package.json`, and `scripts/`
-stay together. No runtime dependencies or API keys are needed.
+Install the reusable skill from [`skills/readability`](skills/readability/SKILL.md).
+It includes a Node.js CLI and needs Node.js 18 or newer on `PATH`. Keep the
+whole `readability` folder so `SKILL.md`, `package.json`, and `scripts/` stay
+together. It has no runtime dependencies and needs no API key.
 
 ### Codex
 
@@ -63,11 +61,11 @@ mkdir -p ~/.agents/skills/readability
 cp -R skills/readability/. ~/.agents/skills/readability/
 ```
 
-Codex also recognizes the repository's portable [`plugin.json`](plugin.json)
-and [`skills/`](skills/) layout when this repository is added as a plugin
-source. The `.codex-plugin/plugin.json` file supports older Codex plugin
-loaders. Invoke the skill as `$readability`, or ask Codex to check or simplify
-substantial English prose.
+Codex also recognizes the portable [`plugin.json`](plugin.json) and
+[`skills/`](skills/) layout when you add this repository as a plugin source.
+The `.codex-plugin/plugin.json` file supports older Codex plugin loaders.
+Invoke the skill as `$readability`, or ask Codex to check or simplify
+long English prose.
 
 ### OpenCode
 
@@ -78,12 +76,12 @@ mkdir -p ~/.config/opencode/skills/readability
 cp -R skills/readability/. ~/.config/opencode/skills/readability/
 ```
 
-You can instead copy it to `.opencode/skills/readability` in a project. Invoke
-it through OpenCode's `skill` tool or ask for a readability check.
+You can also copy it to `.opencode/skills/readability` in a project. Invoke it
+through OpenCode's `skill` tool or ask for a readability check.
 
 ### Pi
 
-Install this repository as a Pi package; Pi discovers the root `skills/`
+Install this repository as a Pi package. Pi discovers the root `skills/`
 directory:
 
 ```bash
@@ -95,7 +93,7 @@ Invoke `/skill:readability` or ask Pi to simplify English prose.
 
 ### OMP (Oh My Pi)
 
-Install the package to make OMP load its bundled skill:
+Install the package so OMP can load its bundled skill:
 
 ```bash
 omp plugin install https://github.com/alesdrobysh/readability-agents
@@ -113,22 +111,22 @@ Invoke `/skill:readability` or ask OMP for a readability check.
 
 ### Hermes Agent
 
-Hermes can install the skill and its adjacent scripts directly from GitHub:
+Hermes can install the skill and its scripts directly from GitHub:
 
 ```bash
 hermes skills install alesdrobysh/readability-agents/skills/readability
 ```
 
-For a project-only install, copy the folder to `.agents/skills/readability`
-and trust that project with `hermes skills trust`. Invoke `/readability` or ask
+For a project-only install, copy the folder to `.agents/skills/readability` and
+trust that project with `hermes skills trust`. Invoke `/readability` or ask
 Hermes to check prose.
 
 ### Other Agent Skills hosts
 
-Copy `skills/readability` into the host's skill directory. The skill follows
-the `SKILL.md` Agent Skills layout and uses no agent-specific environment
-variables. If the host cannot execute local Node.js, use the CLI from a
-checkout or connect an MCP server that exposes the analyzer.
+Copy `skills/readability` into the host's skill directory. It follows the
+standard `SKILL.md` layout and reads no host-specific environment variables. If
+the host cannot run Node.js, use the CLI from a checkout or use an MCP server
+that exposes the analyzer.
 
 ### Claude Code plugin
 
@@ -139,22 +137,21 @@ Run these commands inside Claude Code:
 /plugin install readability@readability-marketplace
 ```
 
-Then invoke `/readability`, or ask Claude to check or simplify substantial
-English prose. The Claude Code plugin carries the same skill as `skills/`.
+Invoke `/readability`, or ask Claude to check or simplify long English
+prose. The Claude Code plugin includes the same skill as `skills/`.
 
 ### Claude Desktop MCP Bundle
 
-Download `readability.mcpb` from the
-[latest release](https://github.com/alesdrobysh/readability-agents/releases/latest),
-open it, and approve the installation in Claude Desktop. The
-`analyze_readability` MCP tool will then be available.
+Download `readability.mcpb` from the [latest release](https://github.com/alesdrobysh/readability-agents/releases/latest).
+Open it in Claude Desktop and approve the installation. The
+`analyze_readability` MCP tool is then available.
 
-The bundle contains its Node dependencies and needs no API key or setup.
-Its bundled server requires a host with Node.js 20 or newer.
+The bundle includes its Node dependencies. It needs no API key or setup. The
+server needs Node.js 20 or newer on the host.
 
 ### Command line
 
-From a checkout:
+Run these commands from a checkout:
 
 ```bash
 printf '%s\n' 'Your draft goes here.' | node src/check.js
@@ -167,7 +164,7 @@ or options exit 2.
 ### Documentation quality gate
 
 Use a threshold in scripts or CI. The command exits 1 when prose misses the
-target, so it can block an unreadable draft before it ships:
+target. This lets you block an unreadable draft before it ships.
 
 ```bash
 node src/check.js --threshold 60 < README.md
@@ -192,39 +189,38 @@ node src/check.js --threshold 60 < README.md
 | Field | Meaning |
 |---|---|
 | `flesch_reading_ease` | 0-100. 70+ simple, 50-69 moderate, below 50 complex. |
-| `complexity_label` | Bucket derived from Reading Ease. |
-| `mtld` | Lexical diversity; `null` below 50 words. |
-| `ttr` | Unique tokens divided by all tokens. |
+| `complexity_label` | Group based on Reading Ease. |
+| `mtld` | Word variety; `null` below 50 words. |
+| `ttr` | Unique words divided by all words. |
 | `avg_sentence_length` | Words per sentence. |
 | `avg_word_length` | Characters per word. |
 | `word_count`, `sentence_count`, `paragraph_count` | Surface statistics. |
 
-Markdown code blocks and inline code are removed. Formatting markers are
-stripped while prose content, headings, links, and list text are retained.
-This is intentionally a small Markdown heuristic, not a complete parser.
+The analyzer removes code blocks and inline code. It strips formatting markers.
+It keeps prose, headings, links, and list text. This is a small Markdown
+heuristic, not a complete parser.
 
-## What this score can and cannot do
+## Limits of this score
 
-This project currently supports English prose. Its syllable counter is a small
-English heuristic, not a dictionary. Flesch Reading Ease rewards short
-sentences and short words; it does not understand meaning, accuracy, tone, or
-style. Use the score as a guardrail against bloat, not a target to game.
+This project supports English prose only. Its syllable counter uses a small
+heuristic, not a dictionary. Flesch Reading Ease rewards short sentences and
+short words. It cannot judge meaning, accuracy, tone, or style. Use the score as
+a guardrail against bloat. Do not game the number.
 
 Do not use it on source code, logs, command output, non-English prose, or tiny
 samples.
 
 ## How it compares
 
-| Approach | Agent can rewrite | Deterministic score | Local analysis | Threshold exit code |
+| Approach | Agent can rewrite | Fixed score | Local check | Threshold exit |
 |---|---:|---:|---:|---:|
 | Ask an agent to “make it clearer” | Yes | No | — | No |
 | Browser-based writing editor | Outside the agent | Usually | Varies | No |
 | Traditional prose linter | No | Rule-based | Usually | Usually |
 | **Readability** | **Yes** | **Yes** | **Yes** | **Yes** |
 
-Readability is intentionally narrower than a grammar checker or configurable
-style linter. It is a small guardrail for one job: making substantial English
-prose easier to read without losing its meaning.
+Readability does one job: make long English prose easier to read without losing
+its meaning.
 
 ## Privacy and security
 
@@ -235,7 +231,7 @@ Analysis happens in the local Node process. The analyzer:
 - starts no network listener;
 - uses no API keys or telemetry.
 
-The MCP Bundle uses stdio to communicate with its host. See
+The MCP Bundle talks to its host over stdio. See
 [SECURITY.md](SECURITY.md) to report a vulnerability.
 
 ## Development
@@ -248,10 +244,10 @@ npm run build:mcpb
 # -> readability.mcpb and readability.mcpb.sha256
 ```
 
-`src/analyzer.js` and `src/check.js` are canonical. The build copies them into
-the portable skill, Claude Code plugin, and MCP Bundle before packaging. The
-test suite checks that all copies remain identical and that the portable skill
-runs from an installed copy outside this repository.
+`src/analyzer.js` and `src/check.js` are the source files. The build copies them
+into the portable skill, Claude Code plugin, and MCP Bundle. The test suite
+checks that the copies stay identical. It also runs the portable skill from an
+installed copy outside this repository.
 
 Project layout:
 
