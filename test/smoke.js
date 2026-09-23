@@ -1,5 +1,7 @@
 import assert from "node:assert/strict";
-import { readFileSync } from "node:fs";
+import { cpSync, mkdtempSync, readFileSync, rmSync } from "node:fs";
+import { tmpdir } from "node:os";
+import { join } from "node:path";
 import { spawnSync } from "node:child_process";
 import { analyze } from "../src/analyzer.js";
 
@@ -54,6 +56,43 @@ assert.equal(
   readFileSync("src/check.js", "utf8"),
   readFileSync("plugin/skills/readability/scripts/check.js", "utf8"),
 );
+assert.equal(
+  readFileSync("src/check.js", "utf8"),
+  readFileSync("skills/readability/scripts/check.js", "utf8"),
+);
+assert.equal(
+  readFileSync("src/analyzer.js", "utf8"),
+  readFileSync("skills/readability/scripts/analyzer.js", "utf8"),
+);
+for (const file of ["SKILL.md", "package.json"]) {
+  assert.equal(
+    readFileSync(`skills/readability/${file}`, "utf8"),
+    readFileSync(`plugin/skills/readability/${file}`, "utf8"),
+  );
+}
+const skill = readFileSync("skills/readability/SKILL.md", "utf8");
+assert.match(skill, /^---\nname: readability\ndescription:/);
+assert.doesNotMatch(skill, /CLAUDE_PLUGIN_ROOT|\$ARGUMENTS/);
+
+// Installed skills must run even outside this repository's ESM package scope.
+const temp = mkdtempSync(join(tmpdir(), "readability-skill-"));
+try {
+  for (const [source, name] of [
+    ["skills/readability", "portable"],
+    ["plugin/skills/readability", "claude"],
+  ]) {
+    cpSync(source, join(temp, name), { recursive: true });
+    const installed = spawnSync(
+      process.execPath,
+      [join(temp, name, "scripts/check.js"), "--threshold", "60"],
+      { cwd: temp, input: "Simple words make prose easy to read.", encoding: "utf8" },
+    );
+    assert.equal(installed.status, 0, `${name}: ${installed.stderr}`);
+    assert.equal(JSON.parse(installed.stdout).complexity_label, "Simple");
+  }
+} finally {
+  rmSync(temp, { recursive: true, force: true });
+}
 
 function cli(args, input = "") {
   return spawnSync(process.execPath, ["src/check.js", ...args], {
@@ -74,9 +113,20 @@ const pkg = JSON.parse(readFileSync("package.json", "utf8"));
 const manifest = JSON.parse(readFileSync("mcpb/manifest.json", "utf8"));
 const serverPkg = JSON.parse(readFileSync("mcpb/server/package.json", "utf8"));
 const plugin = JSON.parse(readFileSync("plugin/.claude-plugin/plugin.json", "utf8"));
+const portablePlugin = JSON.parse(readFileSync("plugin.json", "utf8"));
+const codexPlugin = JSON.parse(readFileSync(".codex-plugin/plugin.json", "utf8"));
 assert.equal(manifest.manifest_version, "0.3");
 assert.equal(pkg.version, manifest.version);
 assert.equal(pkg.version, plugin.version);
+assert.equal(pkg.version, portablePlugin.version);
+assert.equal(pkg.version, codexPlugin.version);
+assert.equal(portablePlugin.name, codexPlugin.name);
+assert.equal(pkg.name, "readability-agents");
+assert.equal(pkg.name, portablePlugin.name);
+assert.equal(pkg.name, JSON.parse(readFileSync("package-lock.json", "utf8")).name);
+assert.deepEqual(pkg.omp.extensions, ["./extensions/readability.js"]);
+assert.deepEqual(pkg.pi.skills, ["./skills"]);
+assert.equal(codexPlugin.skills, "./skills/");
 assert.equal(pkg.version, serverPkg.version);
 assert.match(readFileSync("mcpb/server/index.js", "utf8"), /const \{ version \} =/);
 

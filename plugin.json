@@ -1,0 +1,14 @@
+{
+  "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
+  "name": "readability-agents",
+  "version": "0.1.0",
+  "description": "Check and improve English prose with a local readability score.",
+  "author": {
+    "name": "Ales Drobysh",
+    "url": "https://github.com/alesdrobysh"
+  },
+  "homepage": "https://github.com/alesdrobysh/readability-agents",
+  "repository": "https://github.com/alesdrobysh/readability-agents",
+  "license": "MIT",
+  "keywords": ["readability", "writing", "documentation", "plain-language"]
+}

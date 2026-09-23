@@ -6,7 +6,7 @@
     "name": "Ales Drobysh"
   },
   "license": "MIT",
-  "repository": "https://github.com/alesdrobysh/readability-claude",
-  "homepage": "https://github.com/alesdrobysh/readability-claude#readme",
+  "repository": "https://github.com/alesdrobysh/readability-agents",
+  "homepage": "https://github.com/alesdrobysh/readability-agents#readme",
   "keywords": ["readability", "flesch-reading-ease", "writing", "documentation", "plain-language", "local-first"]
 }

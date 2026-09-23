@@ -1,11 +1,17 @@
 {
-  "name": "readability-claude",
+  "name": "readability-agents",
   "version": "0.1.0",
-  "description": "Make Claude's prose easier to read, then verify the rewrite locally.",
+  "description": "Check and improve English prose with a local readability score in coding agents.",
   "private": true,
   "type": "module",
   "bin": {
     "readability-check": "./src/check.js"
+  },
+  "omp": {
+    "extensions": ["./extensions/readability.js"]
+  },
+  "pi": {
+    "skills": ["./skills"]
   },
   "scripts": {
     "check": "node src/check.js",
@@ -17,11 +23,16 @@
   "author": "Ales Drobysh",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/alesdrobysh/readability-claude.git"
+    "url": "git+https://github.com/alesdrobysh/readability-agents.git"
   },
-  "homepage": "https://github.com/alesdrobysh/readability-claude#readme",
-  "bugs": "https://github.com/alesdrobysh/readability-claude/issues",
+  "homepage": "https://github.com/alesdrobysh/readability-agents#readme",
+  "bugs": "https://github.com/alesdrobysh/readability-agents/issues",
   "keywords": [
+    "agent-skills",
+    "codex",
+    "opencode",
+    "pi",
+    "hermes",
     "claude",
     "mcp",
     "mcpb",

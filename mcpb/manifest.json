@@ -11,11 +11,11 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/alesdrobysh/readability-claude.git"
+    "url": "https://github.com/alesdrobysh/readability-agents.git"
   },
-  "homepage": "https://github.com/alesdrobysh/readability-claude",
-  "documentation": "https://github.com/alesdrobysh/readability-claude#readme",
-  "support": "https://github.com/alesdrobysh/readability-claude/issues",
+  "homepage": "https://github.com/alesdrobysh/readability-agents",
+  "documentation": "https://github.com/alesdrobysh/readability-agents#readme",
+  "support": "https://github.com/alesdrobysh/readability-agents/issues",
   "icon": "icon.png",
   "license": "MIT",
   "keywords": ["readability", "writing", "prose", "flesch-reading-ease"],

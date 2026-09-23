@@ -25,11 +25,12 @@ Before opening a pull request:
 
 ## Release checklist
 
-1. Update the version in `package.json`, `plugin/.claude-plugin/plugin.json`,
+1. Update the version in `package.json`, `plugin.json`,
+   `.codex-plugin/plugin.json`, `plugin/.claude-plugin/plugin.json`,
    `mcpb/manifest.json`, and `mcpb/server/package.json`.
 2. Move changelog entries from Unreleased to the release version.
 3. Run all checks above.
-4. Install the candidate bundle in Claude Desktop and the plugin using the
-   exact public marketplace commands from the README.
+4. Install the candidate bundle in Claude Desktop, the Claude Code plugin,
+   and the portable skill in at least one other agent using the README steps.
 5. Tag the commit as `vX.Y.Z` and push the tag.
 6. Verify the GitHub release contains `readability.mcpb` and its SHA-256 file.

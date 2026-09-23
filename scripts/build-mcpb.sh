@@ -11,6 +11,10 @@ trap cleanup EXIT
 
 cp "$ROOT/src/analyzer.js" "$ROOT/plugin/skills/readability/scripts/analyzer.js"
 cp "$ROOT/src/check.js" "$ROOT/plugin/skills/readability/scripts/check.js"
+cp "$ROOT/skills/readability/SKILL.md" "$ROOT/plugin/skills/readability/SKILL.md"
+cp "$ROOT/skills/readability/package.json" "$ROOT/plugin/skills/readability/package.json"
+cp "$ROOT/src/analyzer.js" "$ROOT/skills/readability/scripts/analyzer.js"
+cp "$ROOT/src/check.js" "$ROOT/skills/readability/scripts/check.js"
 cp "$ROOT/src/analyzer.js" "$BUNDLE_DIR/server/analyzer.js"
 
 (cd "$BUNDLE_DIR/server" && npm ci --omit=dev --silent)

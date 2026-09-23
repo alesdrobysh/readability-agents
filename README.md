@@ -1,12 +1,12 @@
-# Readability for Claude
+# Readability for Agents
 
-[![CI](https://github.com/alesdrobysh/readability-claude/actions/workflows/ci.yml/badge.svg)](https://github.com/alesdrobysh/readability-claude/actions/workflows/ci.yml)
-[![Release](https://img.shields.io/github/v/release/alesdrobysh/readability-claude)](https://github.com/alesdrobysh/readability-claude/releases)
+[![CI](https://github.com/alesdrobysh/readability-agents/actions/workflows/ci.yml/badge.svg)](https://github.com/alesdrobysh/readability-agents/actions/workflows/ci.yml)
+[![Release](https://img.shields.io/github/v/release/alesdrobysh/readability-agents)](https://github.com/alesdrobysh/readability-agents/releases)
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 
-Stop Claude from turning a short release note or README into polished but dense
-prose. Readability gives Claude a local **measure → rewrite → verify** loop: it
-scores a draft, improves it without dropping facts, and checks the result again.
+Readability gives Codex, OpenCode, Pi, OMP, Hermes, and Claude a local
+**measure → rewrite → verify** loop for English prose. It scores a draft,
+guides a rewrite without dropping facts, and checks the result again.
 
 No copy-pasting into another editor. No account, API key, telemetry, or network
 request.
@@ -14,12 +14,21 @@ request.
 > “Rewrite this release note in plain English. Keep every fact and aim for a
 > Reading Ease score of at least 60.”
 
-![Demo: Claude Code reading a draft, checking its readability, rewriting it, and confirming the score cleared 60](demo/claude-code/claude-code-demo.gif)
+In Codex, invoke the skill directly:
 
-## Why use a skill instead of just prompting Claude?
+```text
+$readability Check `your-draft.md`. Keep every fact. Target Reading Ease 60.
+```
 
-Claude can simplify prose on request, but “make this clearer” has no objective
-finish line. Readability adds a deterministic local check and keeps Claude in a
+![Real OpenCode session: the readability skill rewrites a draft and verifies the final score](demo/opencode/readability.gif)
+
+This recording comes from a real OpenCode session. It shows the skill call,
+local analyzer output, rewrite, and final Reading Ease score.
+
+## Why use a skill instead of just prompting an agent?
+
+An agent can simplify prose on request, but “make this clearer” has no objective
+finish line. Readability adds a deterministic local check and keeps the agent in a
 loop until the draft clears your target—or further simplification would damage
 the content.
 
@@ -40,24 +49,103 @@ It reports:
 
 ## Install
 
+The reusable skill is [`skills/readability`](skills/readability/SKILL.md). It
+contains its own Node.js CLI and needs Node.js 18 or newer on `PATH`. Install
+the entire `readability` folder so `SKILL.md`, `package.json`, and `scripts/`
+stay together. No runtime dependencies or API keys are needed.
+
+### Codex
+
+From a checkout, copy the skill to Codex's user skill directory:
+
+```bash
+mkdir -p ~/.agents/skills/readability
+cp -R skills/readability/. ~/.agents/skills/readability/
+```
+
+Codex also recognizes the repository's portable [`plugin.json`](plugin.json)
+and [`skills/`](skills/) layout when this repository is added as a plugin
+source. The `.codex-plugin/plugin.json` file supports older Codex plugin
+loaders. Invoke the skill as `$readability`, or ask Codex to check or simplify
+substantial English prose.
+
+### OpenCode
+
+From a checkout:
+
+```bash
+mkdir -p ~/.config/opencode/skills/readability
+cp -R skills/readability/. ~/.config/opencode/skills/readability/
+```
+
+You can instead copy it to `.opencode/skills/readability` in a project. Invoke
+it through OpenCode's `skill` tool or ask for a readability check.
+
+### Pi
+
+Install this repository as a Pi package; Pi discovers the root `skills/`
+directory:
+
+```bash
+pi install git:github.com/alesdrobysh/readability-agents
+```
+
+For a project-only install, use `pi install --local` with the same source.
+Invoke `/skill:readability` or ask Pi to simplify English prose.
+
+### OMP (Oh My Pi)
+
+Install the package to make OMP load its bundled skill:
+
+```bash
+omp plugin install https://github.com/alesdrobysh/readability-agents
+```
+
+From a checkout:
+
+```bash
+mkdir -p ~/.omp/agent/skills/readability
+cp -R skills/readability/. ~/.omp/agent/skills/readability/
+```
+
+For a project-only install, copy the folder to `.omp/skills/readability`.
+Invoke `/skill:readability` or ask OMP for a readability check.
+
+### Hermes Agent
+
+Hermes can install the skill and its adjacent scripts directly from GitHub:
+
+```bash
+hermes skills install alesdrobysh/readability-agents/skills/readability
+```
+
+For a project-only install, copy the folder to `.agents/skills/readability`
+and trust that project with `hermes skills trust`. Invoke `/readability` or ask
+Hermes to check prose.
+
+### Other Agent Skills hosts
+
+Copy `skills/readability` into the host's skill directory. The skill follows
+the `SKILL.md` Agent Skills layout and uses no agent-specific environment
+variables. If the host cannot execute local Node.js, use the CLI from a
+checkout or connect an MCP server that exposes the analyzer.
+
 ### Claude Code plugin
 
 Run these commands inside Claude Code:
 
 ```text
-/plugin marketplace add alesdrobysh/readability-claude
+/plugin marketplace add alesdrobysh/readability-agents
 /plugin install readability@readability-marketplace
 ```
 
 Then invoke `/readability`, or ask Claude to check or simplify substantial
-English prose.
-
-Requires Node.js 18 or newer on `PATH`.
+English prose. The Claude Code plugin carries the same skill as `skills/`.
 
 ### Claude Desktop MCP Bundle
 
 Download `readability.mcpb` from the
-[latest release](https://github.com/alesdrobysh/readability-claude/releases/latest),
+[latest release](https://github.com/alesdrobysh/readability-agents/releases/latest),
 open it, and approve the installation in Claude Desktop. The
 `analyze_readability` MCP tool will then be available.
 
@@ -75,8 +163,6 @@ printf '%s\n' 'Your draft goes here.' | node src/check.js --threshold 60
 
 The threshold command exits 1 when the draft misses the target. Invalid input
 or options exit 2.
-
-![Demo: the same paragraph scoring 0 before a rewrite and 99 after, from the CLI](demo/cli/readability.gif)
 
 ### Documentation quality gate
 
@@ -129,12 +215,12 @@ samples.
 
 ## How it compares
 
-| Approach | Rewrites in Claude | Deterministic score | Local analysis | Threshold exit code |
+| Approach | Agent can rewrite | Deterministic score | Local analysis | Threshold exit code |
 |---|---:|---:|---:|---:|
-| Ask Claude to “make it clearer” | Yes | No | — | No |
-| Browser-based writing editor | Outside Claude | Usually | Varies | No |
+| Ask an agent to “make it clearer” | Yes | No | — | No |
+| Browser-based writing editor | Outside the agent | Usually | Varies | No |
 | Traditional prose linter | No | Rule-based | Usually | Usually |
-| **Readability for Claude** | **Yes** | **Yes** | **Yes** | **Yes** |
+| **Readability** | **Yes** | **Yes** | **Yes** | **Yes** |
 
 Readability is intentionally narrower than a grammar checker or configurable
 style linter. It is a small guardrail for one job: making substantial English
@@ -145,7 +231,7 @@ prose easier to read without losing its meaning.
 Analysis happens in the local Node process. The analyzer:
 
 - makes no network requests;
-- does not persist text (the Claude host may retain conversation data);
+- does not persist text (the agent host may retain conversation data);
 - starts no network listener;
 - uses no API keys or telemetry.
 
@@ -163,13 +249,17 @@ npm run build:mcpb
 ```
 
 `src/analyzer.js` and `src/check.js` are canonical. The build copies them into
-the Claude Code plugin and MCP Bundle before packaging, and the test suite
-checks that all copies remain identical.
+the portable skill, Claude Code plugin, and MCP Bundle before packaging. The
+test suite checks that all copies remain identical and that the portable skill
+runs from an installed copy outside this repository.
 
 Project layout:
 
 ```text
 src/                         analyzer and CLI source
+skills/readability/          portable Agent Skill
+plugin.json                  portable plugin manifest
+.codex-plugin/               Codex compatibility manifest
 plugin/                      Claude Code plugin
 mcpb/                        Claude Desktop MCP Bundle source
 test/smoke.js                dependency-free smoke tests
