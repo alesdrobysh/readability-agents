@@ -8,10 +8,14 @@
     "readability-check": "./src/check.js"
   },
   "omp": {
-    "extensions": ["./extensions/readability.js"]
+    "extensions": [
+      "./extensions/readability.js"
+    ]
   },
   "pi": {
-    "skills": ["./skills"]
+    "skills": [
+      "./skills"
+    ]
   },
   "scripts": {
     "check": "node src/check.js",
@@ -51,6 +55,7 @@
     "@anthropic-ai/mcpb": "^2.1.2"
   },
   "overrides": {
-    "tmp": "0.2.7"
+    "tmp": "0.2.7",
+    "zod": "4.6.6"
   }
 }
