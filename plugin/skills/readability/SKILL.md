@@ -3,7 +3,8 @@ name: readability
 description: >
   Local readability checker for substantial English prose such as docs, PR
   descriptions, commit bodies, blog posts, and explanations. Measures Flesch
-  Reading Ease (0-100, higher is easier), MTLD, and TTR. Use when the user asks
+  Reading Ease (0-100, higher is easier), MTLD, TTR, difficult words, and
+  complex sentence hints. Use when the user asks
   to check, simplify, or rewrite prose. Aim for 60 unless the user specifies a
   different threshold.
 ---
@@ -34,6 +35,14 @@ write the draft to a file first. Do not put prose in a shell-quoted `--text`
 argument. The path above is an example; replace it with the installed skill's
 actual path.
 
+To check several files and emit a CI-friendly Markdown summary:
+
+```bash
+node "/absolute/path/to/readability/scripts/check.js" --format markdown --threshold 60 docs/*.md
+```
+
+Ignore familiar project terms in word hints with `--allowlist AcmeAPI,widget`.
+
 ## Output
 
 ```json
@@ -46,7 +55,10 @@ actual path.
   "ttr": 0.61,
   "mtld": 74.2,
   "flesch_reading_ease": 64.3,
-  "complexity_label": "Moderate"
+  "complexity_label": "Moderate",
+  "warnings": [],
+  "difficult_words": [],
+  "complex_sentences": []
 }
 ```
 
@@ -55,12 +67,16 @@ actual path.
 - `mtld`: lexical diversity; `null` for fewer than 50 words.
 - `ttr`: unique tokens divided by all tokens.
 - `avg_sentence_length`: the main signal to inspect when a draft scores low.
+- `warnings`: short samples have unstable scores; the default warning threshold is 100 words.
+- `difficult_words`: words from a bundled local frequency shortlist. Treat these as review hints, not dictionary verdicts.
+- `complex_sentences`: excerpts flagged for length, clause markers, nested relative clauses, or possible passive voice.
 
 ## Workflow
 
 1. Get the draft from the user or the file they named.
 2. Score it with the requested threshold, or 60 by default.
 3. If it misses:
+   - Review `complex_sentences` and `difficult_words` as suggestions; both use local heuristics and can be wrong.
    - Above 25 words per sentence: split long sentences.
    - Above 6 characters per word: prefer plainer words where meaning permits.
    - Below 30 Reading Ease: also remove nested clauses and needless passive

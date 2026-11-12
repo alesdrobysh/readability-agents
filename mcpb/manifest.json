@@ -2,9 +2,9 @@
   "manifest_version": "0.3",
   "name": "readability",
   "display_name": "Readability",
-  "version": "0.1.0",
-  "description": "Score English prose with Flesch Reading Ease and MTLD, and get rewrite guidance.",
-  "long_description": "Adds an analyze_readability tool to Claude Desktop. Pass English prose and get Flesch Reading Ease (0-100), MTLD, TTR, sentence and word stats, and a complexity label. The analyzer runs locally and makes no network requests.",
+  "version": "0.2.0",
+  "description": "Score English prose and identify difficult words and sentences locally.",
+  "long_description": "Adds an analyze_readability tool to Claude Desktop. Returns Flesch Reading Ease (0-100), MTLD, TTR, sentence and word stats, sample-size warnings, difficult-word hints, and complex sentence hints. The analyzer runs locally and makes no network requests.",
   "author": {
     "name": "Ales Drobysh",
     "url": "https://github.com/alesdrobysh"
@@ -30,7 +30,7 @@
   "tools": [
     {
       "name": "analyze_readability",
-      "description": "Analyze English prose and return Flesch Reading Ease, MTLD, TTR, and surface stats."
+      "description": "Analyze English prose for Flesch Reading Ease, sample-size warnings, difficult words, and complex sentence hints."
     }
   ],
   "compatibility": {

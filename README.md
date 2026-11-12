@@ -42,6 +42,9 @@ It reports these values:
 - Flesch Reading Ease: 0-100, higher is easier
 - MTLD and type-token ratio for word variety
 - Sentence, paragraph, and word counts
+- A warning when the sample is under 100 words
+- Local hints for rare words and complex sentences
+- Multi-file JSON or Markdown reports for CI
 - Local processing with no telemetry or network requests
 - A pure JavaScript analyzer with no runtime dependencies
 
@@ -156,6 +159,8 @@ Run these commands from a checkout:
 ```bash
 printf '%s\n' 'Your draft goes here.' | node src/check.js
 printf '%s\n' 'Your draft goes here.' | node src/check.js --threshold 60
+node src/check.js --format markdown --threshold 60 docs/*.md
+node src/check.js --allowlist AcmeAPI,widget docs/*.md
 ```
 
 The threshold command exits 1 when the draft misses the target. Invalid input
@@ -195,10 +200,14 @@ node src/check.js --threshold 60 < README.md
 | `avg_sentence_length` | Words per sentence. |
 | `avg_word_length` | Characters per word. |
 | `word_count`, `sentence_count`, `paragraph_count` | Surface statistics. |
+| `warnings` | Flags short samples; default minimum is 100 words. |
+| `difficult_words` | Distinct words from a bundled frequency shortlist, excluding `--allowlist` terms. |
+| `complex_sentences` | Excerpts flagged for long length, clause nesting, or possible passive voice. Heuristic only. |
 
-The analyzer removes code blocks and inline code. It strips formatting markers.
-It keeps prose, headings, links, and list text. This is a small Markdown
-heuristic, not a complete parser.
+The analyzer removes code blocks and inline code, strips Markdown syntax, and
+keeps link labels, headings, table contents, and list text. Sentence boundaries
+protect common abbreviations, initials, and decimal numbers. This remains a
+small local heuristic, not a complete Markdown or grammar parser.
 
 ## Limits of this score
 
@@ -207,8 +216,8 @@ heuristic, not a dictionary. Flesch Reading Ease rewards short sentences and
 short words. It cannot judge meaning, accuracy, tone, or style. Use the score as
 a guardrail against bloat. Do not game the number.
 
-Do not use it on source code, logs, command output, non-English prose, or tiny
-samples.
+Do not use it on source code, logs, command output, or non-English prose. Short
+samples still get a score, but carry a warning because they are unstable.
 
 ## How it compares
 
@@ -238,6 +247,7 @@ The MCP Bundle talks to its host over stdio. See
 
 ```bash
 npm install
+npm ci --prefix mcpb/server
 npm test
 npm run validate:mcpb
 npm run build:mcpb

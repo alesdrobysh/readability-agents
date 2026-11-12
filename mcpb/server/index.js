@@ -19,7 +19,7 @@ const TOOL = {
   name: "analyze_readability",
   description:
     "Score English prose with Flesch Reading Ease (0-100, higher = easier), " +
-    "MTLD, TTR, plus sentence and word stats. Call this before finalizing " +
+    "MTLD, TTR, difficult-word flags, complex sentence hints, and sample-size warnings. " +
     "any substantial prose (docs, PR descriptions, commit bodies, blog " +
     "posts). If flesch_reading_ease is below the user's threshold (default 60), " +
     "rewrite with shorter sentences and plainer words, then re-check.",
@@ -29,6 +29,11 @@ const TOOL = {
       text: {
         type: "string",
         description: "The prose to analyze. Markdown is fine — it will be stripped.",
+      },
+      allowlist: {
+        type: "array",
+        items: { type: "string" },
+        description: "Project terms to ignore in difficult-word findings.",
       },
     },
     required: ["text"],
@@ -47,7 +52,7 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
     };
   }
   const text = request.params.arguments?.text ?? "";
-  const result = analyze(text);
+  const result = analyze(text, { allowlist: request.params.arguments?.allowlist ?? [] });
   return {
     content: [{ type: "text", text: JSON.stringify(result, null, 2) }],
     ...(result.error ? { isError: true } : {}),

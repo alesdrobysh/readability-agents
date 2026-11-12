@@ -1,0 +1,20 @@
+[
+  {
+    "id": "gettysburg-address-opening",
+    "source": "Abraham Lincoln, Gettysburg Address (1863), National Archives",
+    "url": "https://www.archives.gov/milestone-documents/gettysburg-address",
+    "text": "Four score and seven years ago our fathers brought forth on this continent, a new nation, conceived in Liberty, and dedicated to the proposition that all men are created equal."
+  },
+  {
+    "id": "constitution-preamble-opening",
+    "source": "United States Constitution, Preamble (1787), National Archives",
+    "url": "https://www.archives.gov/founding-docs/constitution-transcript",
+    "text": "We the People of the United States, in Order to form a more perfect Union, establish Justice, insure domestic Tranquility, provide for the common defence, promote the general Welfare, and secure the Blessings of Liberty to ourselves and our Posterity, do ordain and establish this Constitution for the United States of America."
+  },
+  {
+    "id": "gettysburg-address-closing",
+    "source": "Abraham Lincoln, Gettysburg Address (1863), National Archives",
+    "url": "https://www.archives.gov/milestone-documents/gettysburg-address",
+    "text": "It is rather for us to be here dedicated to the great task remaining before us—that from these honored dead we take increased devotion to that cause for which they gave the last full measure of devotion—that we here highly resolve that these dead shall not have died in vain—that this nation, under God, shall have a new birth of freedom—and that government of the people, by the people, for the people, shall not perish from the earth."
+  }
+]

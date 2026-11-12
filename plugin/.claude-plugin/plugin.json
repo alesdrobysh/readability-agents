@@ -1,6 +1,6 @@
 {
   "name": "readability",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Make Claude's prose easier to read, then verify the rewrite locally with a measurable score.",
   "author": {
     "name": "Ales Drobysh"

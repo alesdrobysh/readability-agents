@@ -3,23 +3,19 @@ import { cpSync, mkdtempSync, readFileSync, rmSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { spawnSync } from "node:child_process";
+import { Client } from "../mcpb/server/node_modules/@modelcontextprotocol/sdk/dist/esm/client/index.js";
+import { StdioClientTransport } from "../mcpb/server/node_modules/@modelcontextprotocol/sdk/dist/esm/client/stdio.js";
 import { analyze } from "../src/analyzer.js";
 
 const result = analyze("The cat sat on the mat. It was a warm and sunny day.");
 assert.equal(typeof result.flesch_reading_ease, "number");
 assert.equal("flesch_kincaid" in result, false);
 assert.equal(result.complexity_label, "Simple");
-assert.deepEqual(result, {
-  word_count: 13,
-  sentence_count: 2,
-  paragraph_count: 1,
-  avg_sentence_length: 6.5,
-  avg_word_length: 2.9,
-  ttr: 0.923,
-  mtld: null,
-  flesch_reading_ease: 100,
-  complexity_label: "Simple",
+assert.deepEqual(Object.fromEntries(Object.entries(result).filter(([key]) => !["warnings", "difficult_words", "complex_sentences"].includes(key))), {
+  word_count: 13, sentence_count: 2, paragraph_count: 1, avg_sentence_length: 6.5,
+  avg_word_length: 2.9, ttr: 0.923, mtld: null, flesch_reading_ease: 100, complexity_label: "Simple",
 });
+assert.equal(result.warnings.length, 1);
 
 assert.deepEqual(analyze("   "), { error: "No text to analyze." });
 assert.equal(analyze("Café is open.").word_count, 3);
@@ -27,20 +23,27 @@ assert.equal(analyze("Hello `ignored code` world.").word_count, 2);
 assert.equal(analyze("A simple table helps.").flesch_reading_ease, 75.9);
 assert.equal(analyze("She said “This is clear.” Then she left.").sentence_count, 2);
 assert.equal(analyze("Dr. Smith wrote this. It is clear.").sentence_count, 2);
-assert.deepEqual(
-  analyze("# Clear title\n\nShort **plain** prose with [a link](https://example.com). `hidden code`"),
-  {
-    word_count: 8,
-    sentence_count: 1,
-    paragraph_count: 2,
-    avg_sentence_length: 8,
-    avg_word_length: 4.3,
-    ttr: 1,
-    mtld: null,
-    flesch_reading_ease: 100,
-    complexity_label: "Simple",
-  },
-);
+assert.equal(analyze("A sentence. Another sentence! What now?").sentence_count, 3);
+assert.equal(analyze("Dr. Smith met J. R. Jones at 3.14 p.m. He left.").sentence_count, 2);
+assert.equal(analyze("# Header\n\nFirst paragraph.\n\nSecond one.").paragraph_count, 3);
+assert.equal(analyze("| Name | Purpose |\n| --- | --- |\n| Alpha | Makes things clear. |").word_count, 6);
+assert.equal(analyze("The system uses an idiosyncratic paradigm.").difficult_words[0].word, "idiosyncratic");
+assert.equal(analyze("The system uses an idiosyncratic paradigm.", { allowlist: ["idiosyncratic", "paradigm"] }).difficult_words.length, 0);
+assert.ok(analyze("The system, which users can configure, stores data that the service reads because it is needed.").complex_sentences[0].reasons.includes("multiple dependent clauses"));
+const corpus = JSON.parse(readFileSync("test/fixtures/benchmark.json", "utf8"));
+assert.equal(corpus.length, 3);
+for (const sample of corpus) {
+  const first = analyze(sample.text);
+  assert.deepEqual(analyze(sample.text), first, `${sample.id} must be deterministic`);
+  assert.ok(first.word_count > 25, sample.id);
+  assert.equal(first.sentence_count, 1, sample.id);
+  assert.equal(first.warnings.length, 1, sample.id);
+}
+const markdown = analyze("# Clear title\n\nShort **plain** prose with [a link](https://example.com). `hidden code`");
+assert.equal(markdown.word_count, 8);
+assert.equal(markdown.sentence_count, 1);
+assert.equal(markdown.paragraph_count, 2);
+assert.equal(markdown.flesch_reading_ease, 100);
 assert.equal(analyze("word ".repeat(49)).mtld, null);
 assert.equal(typeof analyze("word ".repeat(50)).mtld, "number");
 
@@ -103,11 +106,13 @@ function cli(args, input = "") {
 }
 
 assert.equal(cli([], "Simple words make prose easy to read.").status, 0);
-assert.equal(cli(["--threshold", "101"], "Short text.").status, 1);
+assert.equal(cli(["--threshold", "100"], "The interoperability configuration is unnecessarily complex.").status, 1);
 assert.equal(cli([], "").status, 2);
 assert.equal(cli(["--unknown"]).status, 2);
 assert.equal(cli(["--threshold", "nope"], "Short text.").status, 2);
 assert.equal(cli(["--text"]).status, 2);
+assert.equal(cli(["--format", "markdown", "README.md"]).status, 0);
+assert.equal(cli(["--min-words", "0"], "Short text.").status, 2);
 
 const pkg = JSON.parse(readFileSync("package.json", "utf8"));
 const manifest = JSON.parse(readFileSync("mcpb/manifest.json", "utf8"));
@@ -129,5 +134,25 @@ assert.deepEqual(pkg.pi.skills, ["./skills"]);
 assert.equal(codexPlugin.skills, "./skills/");
 assert.equal(pkg.version, serverPkg.version);
 assert.match(readFileSync("mcpb/server/index.js", "utf8"), /const \{ version \} =/);
+
+const transport = new StdioClientTransport({
+  command: process.execPath,
+  args: ["mcpb/server/index.js"],
+});
+const mcp = new Client({ name: "readability-smoke-test", version: "1.0.0" });
+try {
+  await mcp.connect(transport);
+  const tools = await mcp.listTools();
+  assert.ok(tools.tools.some((tool) => tool.name === "analyze_readability"));
+  const response = await mcp.callTool({
+    name: "analyze_readability",
+    arguments: { text: "An idiosyncratic service assists the team.", allowlist: ["idiosyncratic"] },
+  });
+  const mcpResult = JSON.parse(response.content[0].text);
+  assert.equal(mcpResult.difficult_words.length, 0);
+  assert.equal(mcpResult.warnings.length, 1);
+} finally {
+  await mcp.close();
+}
 
 console.log("smoke tests passed");
